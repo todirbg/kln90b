@@ -1,0 +1,10 @@
+Materials from freepbr.com can not be uploaded!
+https://freepbr.com/materials/metal-streaks-pbr-metal-material/ --streakedmetal-bl
+https://freepbr.com/materials/scuffed-aluminum-pbr-metal-material/ --Aluminum-Scuffed_bl
+https://freepbr.com/materials/textured-rubber-pbr-material/ --synth-rubber-bl
+https://freepbr.com/materials/worn-scuffed-plastic-pbr-material/ --scuffed-plastic-1-bl
+https://freepbr.com/materials/scuffed-iron-pbr-metal-material/ --Iron-Scuffed_bl
+
+Materials from ambientcg.com -- cc0textures.com
+https://ambientcg.com/view?id=Metal003
+https://ambientcg.com/view?id=Metal011

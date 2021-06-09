@@ -1,0 +1,97 @@
+v0.31a
+-moved 3D objects entirely to blender -files available on request
+-some fixes on 3D models
+-click regions reworked
+-texture normal maps
+-fixed bug in code when fplan is deleted while in obs mode code crashes an only reload can fix it. Now goes to Leg mode and Nav mode when fplan deleted. Still single error for missing waypoint but no ill effects.
+-fixed errors if no user waypoint list exist. Now SUP page will show message if user tries to browse in Scan Mode
+v0.32a
+-VNAV in ALT page works correct now. Change of waypoint if duplicate is found does not make left cursor disappear and duplicate selection on left page now works.
+-fixed user created airports errors in nearest list. Now shows correctly. Added line “USER APT” instead of name. Unsure about realism.
+-added fix to remove leading zeroes in user apt created rwy length and elevation
+-other not so important bug fixes I forgot about.
+v0.33a
+-fixed path flowing deviation -FUBAR
+-fixed/worked around "Change SID/STAR/APR" not working correctly
+v0.34a
+-autopilot logic modified, it is a bit more accurate now and more aggressive at APR stage
+-new feature - VNAV otuput to HSI
+-changed hdef, dme distance, dme speed and dme time datarefs
+-datarefs for nav instruments interfacing moved to top of KLN90_panel.lua for easy edit
+-fix nav2 completely independent of kln90b state
+-fix nav1 is not bugged in nav mode.
+-new feature - waypoint for vnav can be selected by pulling scan and iterating trough the points in fpl
+-activateFPLN0() is indexing all points in fpln regardless of our position relative to them. Still activates nearest leg. Needed for pull scan wpt selection in vnav
+-changed dataref sim/flightmodel/position/magpsi to sim/flightmodel/position/mag_psi
+v0.35a 
+-restored activateFPLN0() to original state.
+
+v0.40a
+-new features - 2D context windows for kln90b and MD41. Animated and fully working
+-not compatible with X-Plane 10!
+v0.41a
+-removed 2D window decorations, added click regions for close, pop out to OS and resize
+-restored KLN popup panel functionality
+-added menu items to toggle components visibility MENU/Plugins/"KLN90B/MD41"
+-added variable draw3d in main lua to control display drawing if 3D Object is not used. Default true.
+v0.42a
+-fixed error when pressing direct to if no fpl exist and scan mode on
+-3d objects moved to 0.0.0 position
+-added support for rotation in offset_calculator
+-bugfixes in offset_calculator
+V0.43a
+-new helper program kln_installer.exe for automatic click regions merging to panel object
+V0.50b
+-bugfixes
+-improved 3d models and textures. Clean install required.
+-improved 2d model for kln90b.
+-lit textures for md41
+V0.60b
+-kln_installer.exe fix to account for cockpit.obj offset
+-3D body and rack for kln90b in 2 variants - short and standard
+-md41 texture normal maps
+-md41 3D object has body now
+-updated instructions
+v0.70b
+-SASL updated to 3.80
+-plugin folder renamed to KLN90B
+-rewritten legacy code for display drawing. Now display is drawn at 0 0 position in panel.png(lower left corner) with size 210, 110
+-plugin now draws its own background for compatibility with transparent panels
+-adjusted 3D display mapping. Click regions reinstall required! Sorry :(
+-fixed bug nil error if fpln was deleted while in direct to mode
+-fixed bug entering rad value while creating user wpt was not working properly and gave nil errors
+-fixed bug nil error when switching to OBS mode if no wpt exist
+-fixed nil error bugs in ref page
+-VNAV glideslope indication now optional. New option in SET 10 page called VNV GS.
+-fixed VNAV glideslope error calculating glideslope with pressure altitude, now indicated altitude.
+-fixed VNAV glideslope range.
+-KLN90B now saves last APT entered in APT page upon exit/restart
+-click regions blender file now included if remapping is needed
+-more minor bugfixes
+-bugfixes in kln_installer.exe
+-2D windows now drawn independent of x-plane lightning.
+-updated manual
+v0.71b
+-new feature - saving nav5 and super nav 5 pages preferences
+v0.80b
+-SASL updated to 3.9
+-fixed bug errors if lpage is nav5 and entering user wpt on left by lat/lon
+-fixed bug errors if active mode is direct to sup wpt and entering wpts in fplan  
+v0.81b
+-2D popup close and pop mantain scale and auto hide
+-2D popup windows save state and position
+-3D and 2D drawing optimized, if in 3D mode 2D window copy display texture from panel
+v0.90b
+-Optimized 3D objects with new 2K textures
+-SASL updated to 3.11.0
+-generates new custom coded database from x-plane default or custom data. Navigraph database is unusable for this ver. Uses new folder /Custom Data/KLN90B_Navdata. All airports with ICAO codes not longer than 4 symbols are included. Procedures are loaded from x-plane CFIP files. All approaches are shown.
+-new fictional set11 page. Allows for user to select if the gps should show Heliports/helipads and water ports/water runways. Requires plugin reload after set.
+-install instructions edited
+-removed FMS function as it has to be rewritten for x-plane 11
+-fixed searching for apt by name bugs
+-many more small bugfixes.
+v0.95b
+-autopilot no longer driven directly by kln90b.
+-added new options to fictional set11 page - syncronize nav datarefs to gps and set gps rate.
+-added new option to show only the display in 2D window. Usefull for hardware kln90b builders.
+-various small fixes
