@@ -95,3 +95,5 @@ v0.95b
 -added new options to fictional set11 page - syncronize nav datarefs to gps and set gps rate.
 -added new option to show only the display in 2D window. Usefull for hardware kln90b builders.
 -various small fixes
+v0.96b
+-fix database generation with X-Plane 11.55

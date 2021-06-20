@@ -932,11 +932,15 @@ end
 				elseif words[1] == "1050" or words[1] == "1051" or words[1] == "1052" or words[1] == "1053" or words[1] == "1054" or words[1] == "1055" or words[1] == "1056" then -- or (words[1] >= "50" and words[1] <= 56)  then
 					local frq =  words[2]:match("(%w+) (.+)")
 					--service 1, frq 2
-					data["airport"][icao_code][7][#data["airport"][icao_code][7]+1] = {words[1],frq}
+                    if frq then
+                      data["airport"][icao_code][7][#data["airport"][icao_code][7]+1] = {words[1],frq}
+                    end
 				elseif words[1] == "1050" or words[1] == "1051" or words[1] == "1052" or words[1] == "1053" or words[1] == "1054" or words[1] == "1055" or words[1] == "1056" then -- or (words[1] >= "50" and words[1] <= 56)  then
 					local frq =  words[2]:match("(%w+) (.+)")
 					--service 1, frq 2
-					data["airport"][icao_code][7][#data["airport"][icao_code][7]+1] = {words[1],frq}
+                    if frq then
+                      data["airport"][icao_code][7][#data["airport"][icao_code][7]+1] = {words[1],frq}
+                    end
 
 				end
 			end
