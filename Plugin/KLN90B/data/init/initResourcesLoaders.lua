@@ -9,7 +9,7 @@
 --- @param width number
 --- @param height number
 --- @overload fun(fileName:string):number
---- @overload fun(fileName:string, x:number, y:number):number
+--- @overload fun(fileName:string, width:number, height:number):number
 --- @return number, number, number
 --- @see reference
 --- : https://1-sim.com/files/SASL3Manual.pdf#loadImage
@@ -86,7 +86,17 @@ loadImageFromMemory = loadTextureFromMemory
 --- @see reference
 --- : https://1-sim.com/files/SASL3Manual.pdf#loadBitmapFont
 function loadBitmapFont(fileName)
-    return private.loadFontImpl(fileName, sasl.gl.getGLBitmapFont)
+    local f = findResourceFile(fileName)
+    if f == nil then
+        logError("Can't find bitmap font", fileName)
+        return nil
+    end
+
+    local font = sasl.gl.getGLBitmapFont(f)
+    if not font then
+        logError("Can't load bitmap font", fileName)
+    end
+    return font
 end
 
 sasl.gl.loadBitmapFont = loadBitmapFont
@@ -96,35 +106,35 @@ sasl.gl.loadBitmapFont = loadBitmapFont
 
 --- Loads font from file (TTF, TTC, OTF, etc).
 --- @param fileName string
+--- @param forceNewInstance boolean
+--- @param texture number
+--- @param x number
+--- @param y number
+--- @param width number
+--- @param height number
+--- @overload fun(fileName:string):number
 --- @return number
 --- @see reference
 --- : https://1-sim.com/files/SASL3Manual.pdf#loadFont
-function loadFont(fileName)
-    return private.loadFontImpl(fileName, sasl.gl.getGLFont)
-end
-
-sasl.gl.loadFont = loadFont
-
--------------------------------------------------------------------------------
--------------------------------------------------------------------------------
-
---- Loads font using specified.
---- @param fileName string
---- @param loadingFunction fun(fileName:string):number
---- @return number
-function private.loadFontImpl(fileName, loadingFunction)
+function loadFont(fileName, forceNewInstance, texture, x, y, width, height)
     local f = findResourceFile(fileName)
     if f == nil then
         logError("Can't find font", fileName)
         return nil
     end
 
-    local font = loadingFunction(f)
+    local font
+    if height ~= nil then font = sasl.gl.getGLFont(f, forceNewInstance, texture, x, y, width, height)
+    elseif texture ~= nil then font = sasl.gl.getGLFont(f, forceNewInstance, texture)
+    else font = sasl.gl.getGLFont(f) end
+
     if not font then
         logError("Can't load font", fileName)
     end
     return font
 end
+
+sasl.gl.loadFont = loadFont
 
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------

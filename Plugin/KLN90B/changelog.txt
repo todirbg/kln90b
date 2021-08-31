@@ -1,4 +1,51 @@
 ----------------------------------------------------------
+SASL 3.13.1 (XP11.25+ support)
+----------------------------------------------------------
+
+- Fixed Lua annotations for functions on C/C++ side
+- Fixed possible issue with wrong 3D positional sounds location
+- Fixed errors/warnings logging in cases when errors occured inside nested C++/Lua/C++... function calls
+- Fixed possible incorrect warnings in case of anti-aliasing usage for render targets (textures)
+- Fixed collecting telemetry in SASL Developer Widget when telemetry tab is not active
+- Fixed 'resetBlending' function – initial blending state is correctly reset now
+- Fixed 'getElapsedMicroseconds' function result
+- Added validation for created framebuffers before usage
+- Added ability to not create Depth/Stencil buffer attachment on render target creation (masking won't work in this case)
+- Added ability to specify AA level for render target on render target creation, without need to specify this parameter in 'setRenderTarget' function
+- Added ability to override SASL project configuration with 'ovrdconfiguration.ini' file (only in Free SASL version, may be useful for distributed development in teams) 
+- Added improvements on logging side (fixed formatting and update logged information)
+- Added general 'log' function, parametrized with more flexible output options per log action 
+- Added ability to set decoration for custom decorated context windows with 'setDecoration' method
+- Added special notification window reporting Lua errors when developer console in widget is not enabled/visible
+- Added ability to draw convex geometry with per-vertex color specification
+- Added ability to create separate instances of the same font file and use defined texture region for glyphs creation
+- Added functions to display dynamic information about font and display generated fonts textures ('getFontInfo', 'drawFontTexture')
+- Added 'initialize' callback for Lua components ('initialize' callbacks guaranteed to be called right before first 'update' call)
+- Added logic to prevent possible drawing calls in components before 'initialize' and first 'update' calls are done.
+- Improved text drawing performance a little bit and improved glyphs packaging algorithm
+- Set SASL_STOP_PROCESSING as default Lua errors handling policy ('setLuaErrorsHandling' function can be used to alter behavior)
+
+----------------------------------------------------------
+SASL 3.12.1 (XP11.25+ support)
+----------------------------------------------------------
+
+- Fixed possible broken XP menu layout after menu item deletion
+- Fixed a few bugs related to nested XP menus creation
+- Fixed artificial limit on how many XP menu items and Hot Keys may be created
+- Fixed "getElapsedMicroseconds" function behavior
+- Fixed a few possible crashes during Search usage in SASL Dev Widget
+- Fixed possible crash after fast reloading of project and 'startProcess' function usage
+- Fixed the crash in case of attempt to destroy currently active Render Target
+- Fixed possible issue with incorrect Context Windows keyboard focusing
+- Added 'hasFocus' method for Context Window object
+- Added cache usage for Lua scripts and modules loaded with 'include' and 'request' function
+- Added ability to force new instance of Lua module creation (for modules loaded with 'request')
+- Added ability to schedule full SASL project reboot as soon as possible (may be used to reload the project in reaction to specific event)
+- Added parameter for 'onAirportLoaded' callback indicating the number new flights started since SASL plugin enabling
+- Added ability to omit file extension when using 'include' or 'request'
+- Update default SASL Context Window decoration (drawing performance and title showing)
+
+----------------------------------------------------------
 SASL 3.11.0 (XP11.25+ support)
 ----------------------------------------------------------
 
@@ -18,7 +65,7 @@ SASL 3.10.2 (XP11.25+ support)
 SASL 3.10.1 (XP11.25+ support)
 ----------------------------------------------------------
 
-- Fixed drawing components cursors in old-style <subpanel>  
+- Fixed drawing components cursors in old-style <subpanel>
 - Fixed possible crash in case of enabled telemetry in Dev Widget
 
 ----------------------------------------------------------

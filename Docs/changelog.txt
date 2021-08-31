@@ -97,3 +97,7 @@ v0.95b
 -various small fixes
 v0.96b
 -fix database generation with X-Plane 11.55
+v0.97b
+-fix database generation failure if custom ariport does not have coordinates in apt.dat file.
+-fix plugin auto reset after database update.
+-updated SASL to 3.13.1.

@@ -21,7 +21,7 @@ end
 --- : https://1-sim.com/files/SASL3Manual.pdf#drawAll3D
 function drawAll3D(components)
     for _, v in ipairs(components) do
-        private.drawComponent3D(v)
+        v:draw3D()
     end
 end
 
@@ -34,7 +34,7 @@ end
 --- : https://1-sim.com/files/SASL3Manual.pdf#drawAllObjects
 function drawAllObjects(components)
     for _, v in ipairs(components) do
-        private.drawObjects(v)
+        v:drawObjects()
     end
 end
 
@@ -101,16 +101,18 @@ function private.drawComponent(v)
     end
 end
 
---- Draws 3D from component.
---- @param v Component
-function private.drawComponent3D(v)
-    v:draw3D()
-end
+-------------------------------------------------------------------------------
+-- Initialize
+-------------------------------------------------------------------------------
 
---- Draws objects from components.
---- @param v Component
-function private.drawObjects(v)
-    v:drawObjects()
+--- Initializes all components.
+--- @param components Component[]
+--- @see reference
+--- : https://1-sim.com/files/SASL3Manual.pdf#initializeAll
+function initializeAll(components)
+    for _, v in ipairs(components) do
+        v:initialize()
+    end
 end
 
 -------------------------------------------------------------------------------
@@ -123,17 +125,6 @@ end
 --- : https://1-sim.com/files/SASL3Manual.pdf#updateAll
 function updateAll(components)
     for _, v in ipairs(components) do
-        private.updateComponent(v)
-    end
-end
-
--------------------------------------------------------------------------------
--------------------------------------------------------------------------------
-
---- Updates component.
---- @param v Component
-function private.updateComponent(v)
-    if v and v.update then
         v:update()
     end
 end
@@ -145,22 +136,24 @@ end
 --- Calls callback function for component recursively.
 --- @param name string
 --- @param component Component
-function private.callCallback(name, component)
+--- @param arg any
+function private.callCallback(name, component, arg)
     local handler = rawget(component, name)
     if handler then
-        handler()
+        handler(arg)
     end
     for i = #component.components, 1, -1 do
-        private.callCallback(name, component.components[i])
+        private.callCallback(name, component.components[i], arg)
     end
 end
 
 --- Calls callback for all components layers.
 --- @param name string
-function private.callCallbackForAllLayers(name)
-    private.callCallback(name, popups)
-    private.callCallback(name, panel)
-    private.callCallback(name, contextWindows)
+--- @param arg any
+function private.callCallbackForAllLayers(name, arg)
+    private.callCallback(name, popups, arg)
+    private.callCallback(name, panel, arg)
+    private.callCallback(name, contextWindows, arg)
 end
 
 -------------------------------------------------------------------------------
@@ -185,7 +178,7 @@ end
 
 --- Draws 3D.
 function draw3DStage()
-    private.drawComponent3D(panel)
+    panel:draw3D()
 end
 
 -------------------------------------------------------------------------------
@@ -193,7 +186,17 @@ end
 
 --- Draws objects.
 function drawObjectsStage()
-    private.drawObjects(panel)
+    panel:drawObjects()
+end
+
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+
+--- Initializing callback right before first update cycle
+function initialize()
+    panel:initialize()
+    popups:initialize()
+    contextWindows:initialize()
 end
 
 -------------------------------------------------------------------------------
@@ -201,17 +204,18 @@ end
 
 --- Updates components.
 function update()
-    private.updateComponent(panel)
-    private.updateComponent(popups)
-    private.updateComponent(contextWindows)
+    panel:update()
+    popups:update()
+    contextWindows:update()
 end
 
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
 
---- Called whenever the user's plane is positioned at a new airport.
-function onAirportLoaded()
-    private.callCallbackForAllLayers("onAirportLoaded")
+--- Called whenever the user's plane is positioned at a new airport (or new flight start).
+--- @param flightIndex number
+function onAirportLoaded(flightIndex)
+    private.callCallbackForAllLayers("onAirportLoaded", flightIndex)
 end
 
 -------------------------------------------------------------------------------

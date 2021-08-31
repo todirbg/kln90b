@@ -38,17 +38,18 @@ _SLOADED = {}
 --- @field draw fun(self:Component)
 --- @field drawObjects fun(self:Component)
 --- @field draw3D fun(self:Component)
+--- @field initialize fun(self:Component)
 --- @field update fun(self:Component)
 --- @field name string
 --- @field visible Property | boolean
 --- @field movable Property | boolean
 --- @field resizable Property | boolean
 --- @field resizeProportional Property | boolean
---- @field onMouseDown fun(self:Component, x:number, y:number, button:MouseButtonID, parentX:number, parentY:number):boolean
---- @field onMouseUp fun(self:Component, x:number, y:number, button:MouseButtonID, parentX:number, parentY:number):boolean
---- @field onMouseHold fun(self:Component, x:number, y:number, button:MouseButtonID, parentX:number, parentY:number):boolean
---- @field onMouseMove fun(self:Component, x:number, y:number, button:MouseButtonID, parentX:number, parentY:number):boolean
---- @field onMouseWheel fun(self:Component, x:number, y:number, button:MouseButtonID, parentX:number, parentY:number, wheelClicks:number):boolean
+--- @field onMouseDown fun(self:Component, x:number, y:number, button:MouseButton, parentX:number, parentY:number):boolean
+--- @field onMouseUp fun(self:Component, x:number, y:number, button:MouseButton, parentX:number, parentY:number):boolean
+--- @field onMouseHold fun(self:Component, x:number, y:number, button:MouseButton, parentX:number, parentY:number):boolean
+--- @field onMouseMove fun(self:Component, x:number, y:number, button:MouseButton, parentX:number, parentY:number):boolean
+--- @field onMouseWheel fun(self:Component, x:number, y:number, button:MouseButton, parentX:number, parentY:number, wheelClicks:number):boolean
 --- @field onKeyDown fun(self:Component, char:number, key:number, shiftDown:number, ctrlDown:number, AltOptDown:number):boolean
 --- @field onKeyUp fun(self:Component, char:number, key:number, shiftDown:number, ctrlDown:number, AltOptDown:number):boolean
 --- @field logInfo fun(...)
@@ -74,6 +75,7 @@ function private.createComponent(name, parent)
         draw = function(comp) drawAll(comp.components) end,
         drawObjects = function(comp) drawAllObjects(comp.components) end,
         draw3D = function(comp) drawAll3D(comp.components) end,
+        initialize = function(comp) initializeAll(comp.components) end,
         update = function(comp) updateAll(comp.components) end,
         name = name,
         visible = createProperty(true),
@@ -286,8 +288,9 @@ end
 --- @param name string
 function include(component, name)
     logInfo("including", name)
+    name = appendDefaultFileExtension(name)
 
-    local f, subdir = openFile(name)
+    local f, subdir = openFile(name, true)
     if not f then
         logError("Can't include script "..name)
     else
@@ -308,20 +311,25 @@ end
 --- 'require' behavior, but loads only Lua scripts using current SASL project
 --- search paths and scripts naming conventions.
 --- @param name string
+--- @param forceInstance boolean
 --- @return any
 --- @see reference
 --- : https://1-sim.com/files/SASL3Manual.pdf#request
-function request(name)
+function request(name, forceInstance)
     logInfo("requesting", name)
+    name = appendDefaultFileExtension(name)
     if _SLOADED[name] then
         if _SLOADED[name] == _SGUARD then
             logError("Loop during script request or error on previous script request")
             return nil
         end
-        return _SLOADED[name]
+        local fInst = forceInstance or false
+        if not fInst then
+            return _SLOADED[name]
+        end
     end
     local oName = name
-    local f, subdir = openFile(name)
+    local f, subdir = openFile(name, true)
     if not f then
         logError("Can't request script "..oName)
         return nil
@@ -467,7 +475,6 @@ function private.runMouseEventByPath(path, name, x, y, button, value)
         px = mx
         py = my
         local position = get(c.position)
-        local size = get(c.size)
         mx = (mx - position[1]) * c.size[1] / position[3]
         my = (my - position[2]) * c.size[2] / position[4]
     end
@@ -515,9 +522,11 @@ end
 --- @field width number
 --- @field height number
 --- @field shape number
+--- @field hideOSCursor boolean
 
 --- Cursor state and position.
 private.cursor = nil
+private.cursorLayer = 0
 
 local function isCursorTable(c)
     return c.x ~= nil and
@@ -540,6 +549,18 @@ function private.setCursor(cursor)
     else
         sasl.gl.setCursorShape(false)
     end
+end
+
+--- Sets current cursor layer.
+--- @param layer number
+function private.setCursorLayer(layer)
+    private.cursorLayer = layer
+    sasl.gl.setCursorLayer(layer)
+end
+
+--- Gets current cursor layer.
+function private.getCursorLayer()
+    return private.cursorLayer
 end
 
 --- Checks if OS cursor should be hidden for current cursor.
@@ -642,6 +663,11 @@ function private.getFocusedComponentPath()
 end
 
 function private.clearFocusedComponentPaths()
+    for _, v in ipairs(focusedComponentPath) do
+        for _, c in ipairs(v) do
+            set(c.focused, false)
+        end
+    end
     focusedComponentPath = {}
 end
 
@@ -753,7 +779,7 @@ local onInterceptingWindow = false
 --- @param isOn boolean
 function private.setOnInterceptingWindow(isOn)
     if isOn then
-        sasl.gl.setCursorLayer(0)
+        private.setCursorLayer(0)
         if onInterceptingWindow ~= isOn then
             private.setCursor(nil)
         end
@@ -897,10 +923,14 @@ end
 --- @param component Component
 --- @param x number
 --- @param y number
-function processMouseMove(component, x, y)
+--- @param keepCursor boolean
+function processMouseMove(component, x, y, keepCursor)
     private.eventCounter = private.eventCounter + 1
+    local curKeep = keepCursor or false
     local cursor = private.getComponentCursor(component, x, y)
-    private.setCursor(cursor)
+    if cursor ~= nil or not curKeep then
+        private.setCursor(cursor)
+    end
 
     local res, path = private.runMouseEvent(component, "onMouseMove", x, y, private.getPressedButton())
     local currentEnteredComponent = private.getEnteredComponent()

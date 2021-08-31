@@ -624,7 +624,8 @@ controls["rknobl"] = 0
 controls["rknobs"] = 0
 controls["rknobsangle"] = 0
 controls["lknobsangle"] = 0
-
+controls["brknobsangle"] = 0
+controls["blknobsangle"] = 0			
 
 controls["rsCRSRchar"] = 0
 controls["lsCRSRchar"] = 0
@@ -739,6 +740,8 @@ while true do
     values["NAVSYNC"] = tonumber(string.sub(line, 9))
   elseif string.find(line, "#GPSRATE") then
     values["GPSrate"] = tonumber(string.sub(line, 9))
+  elseif string.find(line, "#PWRKNOB") then
+    power_knob = tonumber(string.sub(line, 9))
 
 
   end
@@ -828,14 +831,17 @@ end
 
 				elseif words[1] == "1302" then
 					local id, lat_lon= words[2]:match("(%w+%p+%w+) (.+)")
-
-					if id == "datum_lat" then
-						lat_lon = string.format("%.6f", lat_lon)
-						data["airport"][icao_code][4] = lat_lon;
-					elseif id == "datum_lon" then
-						lat_lon = string.format("%.6f", lat_lon)
-						data["airport"][icao_code][5] = lat_lon;
-					end
+          if tonumber(lat_lon) then
+            if id == "datum_lat" then
+                      --(data["airport"][icao_code][1])
+                      --print(id, lat_lon)
+              lat_lon = string.format("%.6f", lat_lon)
+              data["airport"][icao_code][4] = lat_lon;
+            elseif id == "datum_lon" then
+              lat_lon = string.format("%.6f", lat_lon)
+              data["airport"][icao_code][5] = lat_lon;
+            end
+          end
 
 				elseif words[1] == "100" then
 					local fields = {}
@@ -3385,6 +3391,7 @@ function onModuleDone()
   file:write("#SHOWWAT" .. values["showwat"] .. "\n" )
   file:write("#NAVSYNC" .. values["NAVSYNC"] .. "\n" )
   file:write("#GPSRATE" .. values["GPSrate"] .. "\n" )
+  file:write("#PWRKNOB" .. power_knob .. "\n" )                                            
 
   file:write("Ok, here's something\nto keep you entertained:\nGo to the STA 4 page\nand turn the left CRSR on")
 
@@ -12624,7 +12631,7 @@ function update()
               controls["rCRSR"] = 0
 
               if controls["ENT"] == 1 then
-                reset()
+                sasl.scheduleProjectReboot ()
               end
 
               gline[1] = "      U P D A T E"
