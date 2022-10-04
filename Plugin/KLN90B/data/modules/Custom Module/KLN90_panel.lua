@@ -625,7 +625,8 @@ controls["rknobs"] = 0
 controls["rknobsangle"] = 0
 controls["lknobsangle"] = 0
 controls["brknobsangle"] = 0
-controls["blknobsangle"] = 0			
+controls["blknobsangle"] = 0
+
 
 controls["rsCRSRchar"] = 0
 controls["lsCRSRchar"] = 0
@@ -794,6 +795,7 @@ local file = io.open(filename, "r")
 if file == nil then
 	return false
 end
+	print("Pasrsing APT file: " .. filename)
 	local line = file:read("*line")
 	local words = {nil, nil, nil, nil, nil, nil, nil}
 	while true do
@@ -805,7 +807,6 @@ end
 		words[1], words[2] = line:match("(%w+)(.+)")
 		if line == '\r' or line == '' then
 			while true do
-
 				line = file:read("*line")
 
 				if line == "" or line == nil then
@@ -813,9 +814,11 @@ end
 				end
 
 				words[1], words[2] = line:match("(%w+)(.+)")
+				if words[1] == nil or words[2] == nil then print("APT Parsing ERROR in " .. filename .. "\r" .. "LINE: " ..  line ) goto continue end
 				if words[1] == "1" or words[1] == "16" or words[1] == "17"then
 					words[3], words[4], words[5], words[6], words[7] = words[2]:match("(%w+) (%w+) (%w+) (%w+) (.+)")
-					if string.len(words[6]) > 4 then goto continue end
+					for i=3, 7, 1 do if words[i] == nil then print("APT Parsing ERROR in " .. filename .. "\r" .. "CASE " .. words[1] .. " FIELD: " ..  i-1  .. " LINE: " ..  line ) goto continue end end --check if correct format was read
+					if string.len(words[6]) > 4 then print("APT Parsing: Skipping: " .. words[6] .. " - ICAO code longer than 4 digits" ) goto continue end
 					--icao 1, name 2, amsl 3, lat 4, lon 5, rwy{} 6, atis{} 7, type 8
 					icao_code = words[6]
 					data["airport"][icao_code] = {
@@ -831,23 +834,23 @@ end
 
 				elseif words[1] == "1302" then
 					local id, lat_lon= words[2]:match("(%w+%p+%w+) (.+)")
-          if tonumber(lat_lon) then
-            if id == "datum_lat" then
-                      --(data["airport"][icao_code][1])
-                      --print(id, lat_lon)
-              lat_lon = string.format("%.6f", lat_lon)
-              data["airport"][icao_code][4] = lat_lon;
-            elseif id == "datum_lon" then
-              lat_lon = string.format("%.6f", lat_lon)
-              data["airport"][icao_code][5] = lat_lon;
-            end
-          end
+				  if tonumber(lat_lon) then
+					if id == "datum_lat" then
+							  --(data["airport"][icao_code][1])
+							  --print(id, lat_lon)
+					  lat_lon = string.format("%.6f", lat_lon)
+					  data["airport"][icao_code][4] = lat_lon;
+					elseif id == "datum_lon" then
+					  lat_lon = string.format("%.6f", lat_lon)
+					  data["airport"][icao_code][5] = lat_lon;
+					end
+				  end
 
 				elseif words[1] == "100" then
 					local fields = {}
 
 					for w in words[2]:gmatch("([^%s]+)") do fields[#fields + 1] = w end
-
+					for i=1, 19, 1 do if fields[i] == nil then print("APT Parsing ERROR in " .. filename .. "\r" .. "CASE " .. words[1] .. " FIELD: " ..  i+1  .. " LINE: " ..  line ) goto continue end end --check if correct format was read
 					if fields[8]:len() < 2 then
 						fields[8] = "0" .. fields[8]
 					elseif fields[8]:len() < 3 and tonumber(string.sub(fields[8], -1)) == nil then
@@ -884,7 +887,7 @@ end
 					local fields = {}
 
 					for w in words[2]:gmatch("([^%s]+)") do fields[#fields + 1] = w end
-
+					for i=1, 11, 1 do if fields[i] == nil then print("APT Parsing ERROR in " .. filename .. "\r" .. "CASE " .. words[1] .. " FIELD: " ..  i+1  .. " LINE: " ..  line ) goto continue end end --check if correct format was read
 					fields[2] = string.format("%.6f", fields[2])
 					fields[3] = string.format("%.6f", fields[3])
 
@@ -902,7 +905,7 @@ end
 					local fields = {}
 
 					for w in words[2]:gmatch("([^%s]+)") do fields[#fields + 1] = w end
-
+					for i=1, 8, 1 do if fields[i] == nil then print("APT Parsing ERROR in " .. filename .. "\r" .. "CASE " .. words[1] .. " FIELD: " ..  i-1  .. " LINE: " ..  line ) goto continue end end --check if correct format was read
 					if fields[3]:len() < 2 then
 						fields[3] = "0" .. fields[3]
 					elseif fields[3]:len() < 3 and tonumber(string.sub(fields[3], -1)) == nil then
@@ -956,7 +959,6 @@ end
 		end
 
 	end
-
 file:close()
 
 return true
@@ -970,6 +972,7 @@ if file == nil then
 	print("earth_fix.dat file not found")
 	return
 end
+		print("Pasrsing FIX file: " .. filename)
 		local line = file:read("*line")
 		while true do
 			line = file:read("*line")
@@ -977,12 +980,16 @@ end
 		end
 
 		while true do
+			::continue::
 			line = file:read("*line")
 			if line == nil or line == "99\r" or line == "99" then break end
 
 			local fields = {}
 			for w in line:gmatch("([^%s]+)") do
 				fields[#fields+1] = w
+			end
+			for i=1,5,1 do --check if correct format was read
+				if fields[i] == nil then print("FIX Parsing ERROR in " .. filename .. "\r" .. " FIELD: " ..  i  .. " LINE: " ..  line ) goto continue end
 			end
 			fields[1] = string.format("%.6f", fields[1])
 			fields[2] = string.format("%.6f", fields[2])
@@ -1006,13 +1013,13 @@ local file = io.open(filename, "r")
 if file == nil then
 	return
 end
-
+		print("Pasrsing NAV file: " .. filename)
 		local line = file:read("*line")
 
 		while true do
-
+			
 			line = file:read("*line")
-			if line:sub(1,2) == "11" then
+			if line:sub(1,2) == "11" or  line:sub(1,2) == "12" then
 				data["cycle"] = line
             elseif line == '\r' or line == '' then break
 			end
@@ -1021,14 +1028,15 @@ end
 		local cnt = 0
 		local ind = 0
 		while true do
-
+			::continue::
 			line = file:read("*line")
 			if line == nil or line == "99\r" or line == "99" then break end
 			words[1], words[2] = line:match("(%w+)(.+)")
-
+			if words[1] == nil or words[2] == nil then print("NAV Parsing ERROR in " .. filename .. "\r" .. "LINE: " ..  line ) goto continue end
 			if words[1] == "2" then
 				local fields = {}
 				for w in words[2]:gmatch("([^%s]+)") do fields[#fields + 1] = w end
+				for i=1,10,1 do if fields[i] == nil then print("NAV Parsing ERROR in " .. filename .. "\r" .. "CASE " .. words[1] .. " FIELD: " ..  i  .. " LINE: " ..  line ) goto continue end end --check format
 				fields[1] = string.format("%.6f", fields[1])
 				fields[2] = string.format("%.6f", fields[2])
 				if #fields > 10 then
@@ -1053,6 +1061,7 @@ end
 			elseif words[1] == "3" then
 				local fields = {}
 				for w in words[2]:gmatch("([^%s]+)") do fields[#fields + 1] = w end
+				for i=1,10,1 do if fields[i] == nil then print("NAV Parsing ERROR in " .. filename .. "\r" .. "CASE " .. words[1] .. " FIELD: " ..  i  .. " LINE: " ..  line ) goto continue end end --check format
 
 				fields[1] = string.format("%.6f", fields[1])
 				fields[2] = string.format("%.6f", fields[2])
@@ -1086,10 +1095,13 @@ function create_wptdb(path, data)
 
 local filename = path .. "waypoints.txt"
 local file = io.open(filename, "w")
+local count = 0
 table.sort(data["fix"], function(a,b) return a[3] < b[3] end)
 	for k, v in ipairs(data["fix"]) do
 		file:write(v[3] .. "|" .. v[1] .. "|" .. v[2] .. "|" .. v[4] .. "\n")
+		count = count+1
 	end
+	print(count .. " waypoints added to the database")
 file:close()
 
 end
@@ -1098,10 +1110,13 @@ function create_navidsdb(path, data)
 
 local filename = path .. "navaids.txt"
 local file = io.open(filename, "w")
+	local count = 0
 --lat 1, lon 2, id 3, name 4, code 5, elev 6, frq 7, class 8, vorndb 9, dme 10
 	for k, v in pairsByKeys(data["nav"]) do
 		file:write(v[3] .. "|" .. v[4].. "|" .. v[7].. "|" .. v[9].. "|" .. v[10].. "|" .. v[8] .. "|" .. v[1] .. "|" .. v[2].. "|" .. v[6] .. "|" .. v[5] .. "|" .. v[11] .. "\n")
+		count = count+1
 	end
+	print(count .. " navaids added to the database")	
 file:close()
 
 	filename = path .. "database.txt"
@@ -1114,6 +1129,7 @@ end
 function create_aptdb(path, data)
 local filename = path .. "airports.txt"
 local file = io.open(filename, "w")
+local count = 0
 
 local fields = {}
 		for w in data["cycle"]:gmatch("([^%s]+)") do fields[#fields + 1] = w end
@@ -1123,7 +1139,7 @@ local fields = {}
 		file:write("X|" .. fields[6]:sub(1,4) .. "|" .. "XXXXX01" .. numbertomonth(tonumber(month)) .. "/" .. year .. "|XXXXXXXXXXXXXXXXXX\n\n")
 	for k, v in pairsByKeys(data["airport"]) do
 		if v[2] == nil then break end
-
+			count = count + 1
 			if v[4] == "" then
 				local lat = "0"
 				local lon = "0"
@@ -1204,7 +1220,7 @@ local fields = {}
 
 			file:write("\n")
 	end
-
+	print(count .. " airports added to the database")
 	file:close()
 
 end
@@ -2042,7 +2058,7 @@ function distanceFPLN(FPLN, start, finish, page)
 
 
   if page == 0 then
-    if(FPLN[start]["lat"]) ~= nil then --fix for nil error if no fpl present and select wpt in vnv page
+    if(FPLN[start]) ~= nil then --fix for nil error if no fpl present and select wpt in vnv page
     dist = distance(values["GPSlat"], values["GPSlon"], FPLN[start]["lat"], FPLN[start]["lon"])
     else
     dist = 0
@@ -2482,6 +2498,7 @@ function search_nav_paths()
 end
 
 function update_nav_database()
+	print("Updating NAV database")
 	local data = {}
 
 	data["airport"] = {}
@@ -2492,14 +2509,17 @@ function update_nav_database()
 
 	local folders = search_nav_paths()
 
-	parse_apt("Custom Scenery/Global Airports/Earth nav data/", data)
+	if sasl.getXPVersion () == 11 then
+		parse_apt("Custom Scenery/Global Airports/Earth nav data/", data)
+	else 
+		parse_apt("Global Scenery/Global Airports/Earth nav data/", data)
+	end
 
 	for k,v in pairs(folders["apt"]) do
 		parse_apt(v, data)
 	end
 	local path = "Custom Data/"
 	if isFileExists(path .. "earth_nav.dat") then
-
 		for k,v in pairs(folders["nav"]) do
 			parse_nav(v, data)
 		end
@@ -2520,9 +2540,13 @@ function update_nav_database()
 	end
 
 	parse_fix(path, data)
+	print("Creating aptdb...")
 	create_aptdb("Custom Data/KLN90B_Navdata/", data)
+	print("Creating navaidsdb...")
 	create_navidsdb("Custom Data/KLN90B_Navdata/", data)
+	print("Creating wptdb...")
 	create_wptdb("Custom Data/KLN90B_Navdata/", data)
+	print("Database update complete. Reboot plugin.")
 
 
 	data["airport"]["icao"] = nil
@@ -3391,7 +3415,7 @@ function onModuleDone()
   file:write("#SHOWWAT" .. values["showwat"] .. "\n" )
   file:write("#NAVSYNC" .. values["NAVSYNC"] .. "\n" )
   file:write("#GPSRATE" .. values["GPSrate"] .. "\n" )
-  file:write("#PWRKNOB" .. power_knob .. "\n" )                                            
+  file:write("#PWRKNOB" .. power_knob .. "\n" ) 
 
   file:write("Ok, here's something\nto keep you entertained:\nGo to the STA 4 page\nand turn the left CRSR on")
 
@@ -8467,14 +8491,17 @@ function update()
                 local active = values["activeWPT"]["active"]
                 --We bring back the FPLN, but with a direct from a new position
                 values["direct"] = values["activeWPT"][2]
-                values["activeWPT"] = table.copy(FPlan[0])
-                values["activeWPT"]["active"] = active
-                new["ident"] = "    $"
+				if FPlan[0][2] ~= nil then
+					values["activeWPT"] = table.copy(FPlan[0])
+				end	
+					values["activeWPT"]["active"] = active
+					new["ident"] = "    $"
+				
                 local cour = values["HSIOBS"]-180- get(MAGVARin) --getmagvar(values["activeWPT"][2]["lat"], values["activeWPT"][2]["lon"])
-              --For VORs, we use the published magvar.
-              if values["activeWPT"][2]["types"] == 1 and get(GPSmode) == 2 then
-                cour = values["HSIOBS"] - 180 + values["activeWPT"][2]["magvar"]
-              end
+                --For VORs, we use the published magvar.
+					 if values["activeWPT"][2]["types"] == 1 and get(GPSmode) == 2 then
+						cour = values["HSIOBS"] - 180 + values["activeWPT"][2]["magvar"]
+					 end
                 new["lat"], new["lon"] = raddist(values["direct"]["lat"], values["direct"]["lon"], cour, values["dist"])
 
                 local num = FPlan[0]["length"] - values["activeWPT"]["length"] + 1
@@ -17825,7 +17852,7 @@ end --update
                     else
                       set(OBSreq, 1)
                     end
-                    sasl.al.playSample(md41_click, false)
+						sasl.al.playSample(md41_click, false)
                     end
                 return false
               end

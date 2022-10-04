@@ -38,7 +38,6 @@ _SLOADED = {}
 --- @field draw fun(self:Component)
 --- @field drawObjects fun(self:Component)
 --- @field draw3D fun(self:Component)
---- @field initialize fun(self:Component)
 --- @field update fun(self:Component)
 --- @field name string
 --- @field visible Property | boolean
@@ -75,7 +74,6 @@ function private.createComponent(name, parent)
         draw = function(comp) drawAll(comp.components) end,
         drawObjects = function(comp) drawAllObjects(comp.components) end,
         draw3D = function(comp) drawAll3D(comp.components) end,
-        initialize = function(comp) initializeAll(comp.components) end,
         update = function(comp) updateAll(comp.components) end,
         name = name,
         visible = createProperty(true),
@@ -368,7 +366,6 @@ end
 
 --- Saves current state.
 function private.saveState()
-    private.initState()
     private.savePopupsState()
     private.saveContextWindowsState()
     private.writeTableToFile(moduleDirectory.."/state.txt", private.savedState, "state")

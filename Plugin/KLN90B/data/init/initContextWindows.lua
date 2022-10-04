@@ -21,13 +21,8 @@ end
 local function contextWindowHeaderDrawDef(window, w, h)
     local bckColor = { 0.25, 0.25, 0.25, 1 }
     local elColor = { 0.9, 0.9, 0.9, 1 }
-    local actRect = window.decoration.hActiveRect
 
     sasl.gl.drawRectangle(0, 0, w, h, bckColor)
-    if actRect then
-        sasl.gl.drawRectangle(actRect[1], actRect[2], actRect[3], actRect[4], { 0.1, 0.1, 0.1, 1 })
-    end
-
     sasl.gl.drawTexture(cwDecoreRes.clT, 2, 2, h - 4, h - 4, elColor)
     sasl.gl.drawTexture(cwDecoreRes.outT, h + 2, 2, h - 4, h - 4, elColor)
 
@@ -299,7 +294,13 @@ function contextWindow(tbl)
                     decor[k] = v
                 end
             end
-            initDefDecoreRes(decor.headerHeight)
+            if decor.headerHeight ~= 0 then
+                if decor.headerHeight < 15 or decor.headerHeight > 75 then
+                    logWarning("Context window decoration header height exceeds limits (15-75)")
+                    decor.headerHeight = 25
+                end
+                initDefDecoreRes(decor.headerHeight)
+            end
             sasl.windows.setContextWindowDecoration(self.id, decor.headerHeight,
                 decor.draw, decor.onMouseDown, decor.onMouseUp,
                 decor.onMouseHold, decor.onMouseMove, decor.onMouseWheel,
@@ -507,27 +508,27 @@ end
 
 --- Saves context windows states in global state holder.
 function private.saveContextWindowsState()
-    local cw = {}
+    local cw = private.savedState.contextWindows
     for _, c in ipairs(contextWindows.components) do
         local name = c.name
         local sstate = get(c.saveState)
-        if sstate and name ~= defaultWindowName then
-            local modeId, modeMonitor = c.window:getMode()
-            local x, y, w, h = c.window:getPosition()
-            local vis = c.window:isVisible()
-            cw[name] = {
-                mode = { modeId, modeMonitor },
-                position = { x, y, w, h },
-                visible = vis
-            }
+        if sstate then
+            if name ~= defaultWindowName then
+                local modeId, modeMonitor = c.window:getMode()
+                local x, y, w, h = c.window:getPosition()
+                local vis = c.window:isVisible()
+                cw[name] = {
+                    mode = { modeId, modeMonitor },
+                    position = { x, y, w, h },
+                    visible = vis
+                }
+            else
+                logWarning("Context window requsted saving its state, but 'name' wasn't provided at CW creation")
+            end
+        else
+            cw[name] = nil
         end
     end
-
-    if not #cw then
-        return
-    end
-
-    private.savedState.contextWindows = cw
 end
 
 -------------------------------------------------------------------------------

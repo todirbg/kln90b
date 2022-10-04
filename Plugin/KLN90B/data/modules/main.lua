@@ -1,6 +1,6 @@
 --main.lua
 size = {210, 110}
-sasl.logInfo("THIS IS KLN90B V0.97B:  https://forums.x-plane.org/index.php?/files/file/55881-kln90bmd41-for-x-plane-11/")
+sasl.logInfo("THIS IS KLN90B V0.98B:  https://forums.x-plane.org/index.php?/files/file/55881-kln90bmd41-for-x-plane-1112/")
 
 sasl.options.setAircraftPanelRendering(true)
 sasl.options.set3DRendering(false)

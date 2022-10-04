@@ -207,6 +207,20 @@ options.set3DRendering = set3DRendering;
 function setInteractivity(isOn) end;
 options.setInteractivity = setInteractivity;
 
+--- Enables/disables ability to alter blending parameters when drawing to 2D targets.
+--- @param isOn boolean
+--- @see reference
+--- : https://1-sim.com/files/SASL3Manual.pdf#setCustomBlending
+function setCustomBlending(isOn) end;
+options.setCustomBlending = setCustomBlending;
+
+--- Enables/disables optimization related to drawing into multiple render targets in 'update' function.
+--- @param isOn boolean
+--- @see reference
+--- : https://1-sim.com/files/SASL3Manual.pdf#setUpdateDrawingReady
+function setUpdateDrawingReady(isOn) end;
+options.setUpdateDrawingReady = setUpdateDrawingReady;
+
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
 
@@ -2074,11 +2088,16 @@ gl.setRawTextureData = setRawTextureData;
 
 --- Saves texture, specified by numeric handle texID, in file.
 --- @param filename string
---- @param textID number
+--- @param texID number
 --- @see reference
 --- : https://1-sim.com/files/SASL3Manual.pdf#imageFromTexture
-function imageFromTexture(filename, textID) end;
+function imageFromTexture(filename, texID) end;
 gl.imageFromTexture = imageFromTexture;
+
+--- @class FontHinterPreference
+FONT_HINTER_AUTO = nil
+FONT_HINTER_NATIVE = nil
+FONT_HINTER_DISABLED = nil
 
 --- @class TextAlignment
 
@@ -2432,7 +2451,6 @@ gl.unloadImage = unloadImage;
 --- : https://1-sim.com/files/SASL3Manual.pdf#unloadImage
 function unloadTexture(id) end;
 gl.unloadTexture = unloadTexture;
-
 
 --- Unloads font, specified by id.
 --- @param id number

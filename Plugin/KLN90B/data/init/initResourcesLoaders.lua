@@ -106,7 +106,6 @@ sasl.gl.loadBitmapFont = loadBitmapFont
 
 --- Loads font from file (TTF, TTC, OTF, etc).
 --- @param fileName string
---- @param forceNewInstance boolean
 --- @param texture number
 --- @param x number
 --- @param y number
@@ -116,7 +115,29 @@ sasl.gl.loadBitmapFont = loadBitmapFont
 --- @return number
 --- @see reference
 --- : https://1-sim.com/files/SASL3Manual.pdf#loadFont
-function loadFont(fileName, forceNewInstance, texture, x, y, width, height)
+function loadFont(fileName, texture, x, y, width, height)
+    return private.loadFont(fileName, FONT_HINTER_AUTO, texture, x, y, width, height)
+end
+sasl.gl.loadFont = loadFont
+
+--- Loads font from file (TTF, TTC, OTF, etc) using specific hinting preference.
+--- @param fileName string
+--- @param hinter FontHinterPreference
+--- @param texture number
+--- @param x number
+--- @param y number
+--- @param width number
+--- @param height number
+--- @overload fun(fileName:string):number
+--- @return number
+--- @see reference
+--- : https://1-sim.com/files/SASL3Manual.pdf#loadFontHinted
+function loadFontHinted(fileName, hinter, texture, x, y, width, height)
+    return private.loadFont(fileName, hinter, texture, x, y, width, height)
+end
+sasl.gl.loadFontHinted = loadFontHinted
+
+function private.loadFont(fileName, hinter, texture, x, y, width, height)
     local f = findResourceFile(fileName)
     if f == nil then
         logError("Can't find font", fileName)
@@ -124,17 +145,15 @@ function loadFont(fileName, forceNewInstance, texture, x, y, width, height)
     end
 
     local font
-    if height ~= nil then font = sasl.gl.getGLFont(f, forceNewInstance, texture, x, y, width, height)
-    elseif texture ~= nil then font = sasl.gl.getGLFont(f, forceNewInstance, texture)
-    else font = sasl.gl.getGLFont(f) end
+    if height ~= nil then font = sasl.gl.getGLFont(f, hinter, texture, x, y, width, height)
+    elseif texture ~= nil then font = sasl.gl.getGLFont(f, hinter, texture)
+    else font = sasl.gl.getGLFont(f, hinter) end
 
     if not font then
         logError("Can't load font", fileName)
     end
     return font
 end
-
-sasl.gl.loadFont = loadFont
 
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
