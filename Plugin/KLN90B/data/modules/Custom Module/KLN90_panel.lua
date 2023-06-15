@@ -2032,7 +2032,7 @@ function course(lat1, lon1, lat2, lon2)
   lon1 =  lon1 * pi / -180
   lat2 =  lat2 * pi / 180
   lon2 =  lon2 * pi / -180
-  local course = math.mod(math.atan2(sin(lon1 - lon2) * cos(lat2), cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(lon1 - lon2)), 2 * pi)
+  local course = math.fmod(math.atan2(sin(lon1 - lon2) * cos(lat2), cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(lon1 - lon2)), 2 * pi)
   course = (course * 180 / pi) + get(MAGVARin)
   if course < 0 then
     course = course + 360
@@ -2045,7 +2045,7 @@ end
 function raddist(lat1, lon1, tc, d)
   lat =asin(sin(lat1*pi/180)*cos(d*pi/10800)+cos(lat1*pi/180)*sin(d*pi/10800)*cos(tc*pi/180))
   dlon=math.atan2(sin(tc*pi/180)*sin(d*pi/10800)*cos(lat1*pi/180),cos(d*pi/10800)-sin(lat1*pi/180)*sin(lat))
-  lon=math.mod( lon1*pi/180+dlon +pi,2*pi )-pi
+  lon=math.fmod( lon1*pi/180+dlon +pi,2*pi )-pi
   return lat/pi*180, lon/pi*180
 end
 
@@ -14397,8 +14397,8 @@ function update()
                       crs21=math.acos((sin(lat1)-sin(lat2)*cos(dst12))/(sin(dst12)*cos(lat2)))
                     end
 
-                    local ang1=math.mod(crs13-crs12+pi,2*pi)-pi
-                    local ang2=math.mod(crs21-crs23+pi,2*pi)-pi
+                    local ang1=math.fmod(crs13-crs12+pi,2*pi)-pi
+                    local ang2=math.fmod(crs21-crs23+pi,2*pi)-pi
 
 
                     local ang1=math.abs(ang1)
@@ -14407,7 +14407,7 @@ function update()
                     local dst13=math.atan2(sin(dst12)*sin(ang1)*sin(ang2),cos(ang2)+cos(ang1)*cos(ang3))
                     local lat3=asin(sin(lat1)*cos(dst13)+cos(lat1)*sin(dst13)*cos(crs13))
                     local dlon=math.atan2(sin(crs13)*sin(dst13)*cos(lat1),cos(dst13)-sin(lat1)*sin(lat3))
-                    local lon3=math.mod(lon1-dlon+pi,2*pi)-pi
+                    local lon3=math.fmod(lon1-dlon+pi,2*pi)-pi
 
 
                     --we now know the position of the waypoint, we need to check if it's still on the route.
