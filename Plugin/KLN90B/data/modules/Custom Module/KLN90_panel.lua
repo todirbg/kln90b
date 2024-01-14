@@ -11853,7 +11853,7 @@ function update()
                         elseif string.sub(values["cal5F"], 1, 1) == "-" then values["cal5F"] = replaceChar(values["cal5F"],1,"0")
                         else values["cal5F"] = replaceChar(values["cal5F"],1,"-") end
                       else
-                        x = string2value(string.sub(values["cal5F"], controls["lCRSRchar"], controls["lCRSRchar"])) - 1
+                        x = string2value(string.sub(values["cal5F"], controls["lCRSRchar"], controls["lCRSRchar"])) + 1
                         if x > 10 then x = 1 end
                         values["cal5F"] = replaceChar(values["cal5F"],controls["lCRSRchar"],value2string(x))
                       end
