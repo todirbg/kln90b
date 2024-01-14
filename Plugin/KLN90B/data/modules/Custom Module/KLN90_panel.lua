@@ -2,7 +2,7 @@ size = {210, 110}
 
 local currentPosition = get(position)
 ------------------- Aircraft power bus
-defineProperty("avionics_power", globalPropertyi("sim/cockpit/electrical/battery_on"));
+local avionics_power = globalPropertyi("sim/cockpit/electrical/battery_on")
 --replace with dataref fitting your aircraft electrical systems to simulate electrical system connection. example "sim/cockpit/electrical/battery_on" or "sim/cockpit2/switches/avionics_power_on". "sim/cockpit2/electrical/cross_tie" - for default cessna172
 defineProperty("kln_power", createGlobalPropertyi("custom/KLN90/kln_power", get(avionics_power)))
 external_view = globalPropertyf("sim/graphics/view/view_is_external")
@@ -8235,8 +8235,12 @@ for i=1,3 do collectgarbage() end
 
 function update()
 	-- checking aircraft power
-	set(kln_power, get(avionics_power))
-	set(power, power_knob * get(kln_power))
+  local valid_avionics_power = 0
+  if isProperty(avionics_power) then
+    valid_avionics_power = get(avionics_power)
+  end
+  set(kln_power, valid_avionics_power)
+	set(power, power_knob * valid_avionics_power)
 
 
 	--##############################################################################################################################This is the power off page
