@@ -67,8 +67,8 @@ components = {
       commandBegin(sasl.findCommand("custom/KLN90/MD_41_Test_Lamps")) 
       return false
     end,
-    onMouseUP = function()
-      commandBegin(sasl.findCommand("custom/KLN90/MD_41_Test_Lamps")) 
+    onMouseUp = function()
+      commandEnd(sasl.findCommand("custom/KLN90/MD_41_Test_Lamps"))
       return false
     end,
       },
