@@ -1133,10 +1133,18 @@ local count = 0
 
 local fields = {}
 		for w in data["cycle"]:gmatch("([^%s]+)") do fields[#fields + 1] = w end
-		local year = fields[6]:sub(1,2)
-		local month = fields[6]:sub(3,4)
+    local airac_cycle = fields[6]
+    local airac_year = 2000 + tonumber(airac_cycle:sub(1, 2))
+    local cycle_num = tonumber(airac_cycle:sub(3, 4))
+    local exp_date = os.time { year = 1998, month = 1, day = 29, hour = 0 }
+    local days28 = 28 * 24 * 60 * 60
+    while tonumber(os.date("%Y", exp_date)) < airac_year do
+      exp_date = exp_date + days28
+    end
+    exp_date = exp_date + days28 * cycle_num
+    exp_date = os.date("%d%b/%y", exp_date):upper() -- e.g. 21MAR/24
 		--icao 1, name 2, amsl 3, lat 4, lon 5, rwy{} 6, atis{} 7, type 8
-		file:write("X|" .. fields[6]:sub(1,4) .. "|" .. "XXXXX01" .. numbertomonth(tonumber(month)) .. "/" .. year .. "|XXXXXXXXXXXXXXXXXX\n\n")
+		file:write("X|" .. fields[6]:sub(1,4) .. "|" .. "XXXXX" .. exp_date .. "|XXXXXXXXXXXXXXXXXX\n\n")
 	for k, v in pairsByKeys(data["airport"]) do
 		if v[2] == nil then break end
 			count = count + 1
