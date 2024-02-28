@@ -1058,7 +1058,7 @@ end
 				0,						--dme
 				" "
 				}
-			elseif words[1] == "3" then
+			elseif words[1] == "3" or words[1] == "13" then
 				local fields = {}
 				for w in words[2]:gmatch("([^%s]+)") do fields[#fields + 1] = w end
 				for i=1,10,1 do if fields[i] == nil then print("NAV Parsing ERROR in " .. filename .. "\r" .. "CASE " .. words[1] .. " FIELD: " ..  i  .. " LINE: " ..  line ) goto continue end end --check format
