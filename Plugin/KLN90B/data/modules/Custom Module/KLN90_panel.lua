@@ -182,9 +182,8 @@ defineProperty("SPEEDin", globalPropertyf("sim/flightmodel/position/groundspeed"
 --defineProperty("COURSEin", globalPropertyf("sim/flightmodel/position/true_psi"))
 --defineProperty("BETAin", globalPropertyf("sim/flightmodel/position/beta"))
 defineProperty("PSIin", globalPropertyf("sim/flightmodel2/position/mag_psi"))
+HPATHin = globalProperty("sim/flightmodel2/position/hpath")
 
-
---defineProperty("HPATHin", globalPropertyf("sim/flightmodel/position/hpath"))
 defineProperty("MAGVARin", globalPropertyf("sim/flightmodel/position/magnetic_variation"))
 defineProperty("paused", globalPropertyf("sim/time/paused"))
 defineProperty("simspeed", globalPropertyf("sim/time/sim_speed"))
@@ -17242,7 +17241,7 @@ function update()
                       values["GPSlon"] = get(LONin)
                       values["GPSSPD"] = get(SPEEDin)
 					  --if values["GPSSPD"] > 1 then
-                      values["GPSTRK"] = get(PSIin) --(get(HPATHin) + get(MAGVARin)) % 360
+                      values["GPSTRK"] = (get(HPATHin) + get(MAGVARin)) % 360
                        -- if values["GPSTRK"] > 360 then values["GPSTRK"] = values["GPSTRK"] - 360
                        -- elseif values["GPSTRK"] < 0 then values["GPSTRK"] = values["GPSTRK"] + 360 end
                       --end
