@@ -3206,7 +3206,12 @@ function dynaround(num, len)
         return float(num, 1)
       end
     else
-      return  makelength(float(num, 1), 4, 1)
+      -- workaround for 99.95 - 99.999 rounding to "100.0" instead of "100"
+      floatnum = float(num, 1)
+      if floatnum:len() == 5 then
+        floatnum = floatnum:sub(1, 3)
+      end
+      return makelength(floatnum, 4, 1)
     end
   end
 end
