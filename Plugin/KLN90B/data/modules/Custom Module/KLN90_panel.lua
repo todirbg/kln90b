@@ -2012,9 +2012,13 @@ function num2range(num)
   end
 end
 
+function invalid_latlon(lat_or_lon)
+  return lat_or_lon == "_" or lat_or_lon == nil
+end
+
 function distance(lat1, lon1, lat2, lon2)
   --workaround for displaying undefined WPTS.
-  if lat1 == "_" or lon1 == "_" or lat2 == "_" or lon2 == "_" then
+  if invalid_latlon(lat1) or invalid_latlon(lon1) or invalid_latlon(lat2) or invalid_latlon(lon2) then
     return 99999
   end
   -- elseif lat1 == nil or lon1 == nil or lat2 == nil or lon2 == nil then
@@ -2032,7 +2036,7 @@ function distance(lat1, lon1, lat2, lon2)
 end
 
 function course(lat1, lon1, lat2, lon2)
-  if lat1 == "_" or lon1 == "_" or lat2 == "_" or lon2 == "_" then
+  if invalid_latlon(lat1) or invalid_latlon(lon1) or invalid_latlon(lat2) or invalid_latlon(lon2) then
     return 0
   end
   --local magvar = getmagvar(lat1, lon1)
