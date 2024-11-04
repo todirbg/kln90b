@@ -316,18 +316,18 @@ end
 function request(name, forceInstance)
     logInfo("requesting", name)
     name = appendDefaultFileExtension(name)
+    local fInst = forceInstance or false
     if _SLOADED[name] then
         if _SLOADED[name] == _SGUARD then
             logError("Loop during script request or error on previous script request")
             return nil
         end
-        local fInst = forceInstance or false
         if not fInst then
             return _SLOADED[name]
         end
     end
     local oName = name
-    local f, subdir = openFile(name, true)
+    local f, subdir = openFile(name, not fInst)
     if not f then
         logError("Can't request script "..oName)
         return nil

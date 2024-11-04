@@ -19,8 +19,8 @@ local function initDefDecoreRes(headerHeight)
 end
 
 local function contextWindowHeaderDrawDef(window, w, h)
-    local bckColor = { 0.25, 0.25, 0.25, 1 }
-    local elColor = { 0.9, 0.9, 0.9, 1 }
+    local bckColor = { 0.2, 0.2, 0.2, 1 }
+    local elColor = { 1, 1, 1, 1 }
 
     sasl.gl.drawRectangle(0, 0, w, h, bckColor)
     sasl.gl.drawTexture(cwDecoreRes.clT, 2, 2, h - 4, h - 4, elColor)
@@ -92,6 +92,7 @@ local defaultWindowName = "cWindow"
 --- @field proportional boolean
 --- @field gravity number[]
 --- @field noBackground boolean
+--- @field noFocus boolean
 --- @field layer CWLayerID
 --- @field noDecore boolean
 --- @field customDecore boolean
@@ -122,6 +123,7 @@ local defaultWindowName = "cWindow"
 --- @field setGravity fun(self:ContextWindow, left:number, top:number, right:number, bottom:number)
 --- @field setPosition fun(self:ContextWindow, x:number, y:number, w:number, h:number)
 --- @field getPosition fun(self:ContextWindow):number, number, number, number
+--- @field setPassthroughEvents fun(self:ContextWindow, eventsMask:number)
 --- @field setMode fun(self:ContextWindow, mode:CWModeID, monitor:number)
 --- @field getMode fun(self:ContextWindow):CWModeID, number
 --- @field isPoppedOut fun(self:ContextWindow):boolean
@@ -279,7 +281,7 @@ function contextWindow(tbl)
         onMouseMoveContextWindow,
         onMouseWheelContextWindow,
         onContextWindowResize,
-        onContextWindowLayoutChange)
+        tbl.noFocus and function() end or onContextWindowLayoutChange)
 
     window.component = c
 
@@ -405,6 +407,10 @@ function contextWindow(tbl)
         return sasl.windows.getContextWindowPosition(self.id)
     end
 
+    window.setPassthroughEvents = function(self, eventsMask)
+        sasl.windows.setContextWindowPassthroughEvents(self.id, eventsMask)
+    end
+
     -------------------------------------------------------------------------------
 
     window.setMode = function(self, mode, monitor)
@@ -482,10 +488,12 @@ function contextWindow(tbl)
         if self.cmd ~= nil then
             sasl.unregisterCommandHandler(self.cmd, 0)
         end
-        for k, v in ipairs(contextWindows.components) do
-            if v == c then
-                table.remove(contextWindows.components, k)
-                break
+        if contextWindows ~= nil then
+            for k, v in ipairs(contextWindows.components) do
+                if v == c then
+                    table.remove(contextWindows.components, k)
+                    break
+                end
             end
         end
     end
@@ -499,7 +507,9 @@ function contextWindow(tbl)
         private.applyContextWindowState(c)
     end
 
-    contextWindows.component(c)
+    if contextWindows ~= nil then
+        contextWindows.component(c)
+    end
     return window
 end
 

@@ -1,6 +1,6 @@
 --main.lua
 size = {210, 110}
-sasl.logInfo("THIS IS KLN90B V0.98B:  https://forums.x-plane.org/index.php?/files/file/55881-kln90bmd41-for-x-plane-1112/")
+sasl.logInfo("THIS IS KLN90B V0.99.2B:  https://forums.x-plane.org/index.php?/files/file/55881-kln90bmd41-for-x-plane-1112/")
 
 sasl.options.setAircraftPanelRendering(true)
 sasl.options.set3DRendering(false)
@@ -53,8 +53,8 @@ KLN90B = contextWindow {
 			 main = {
 				draw = function(w, h)-- draw  window  header...
 					if hide_ui_kln == false then
-					sasl.gl.drawTexture(popout_img, w-20, h-20, 20, 20)
-					sasl.gl.drawTexture(close_img, 0, h-20, 20, 20)
+					sasl.gl.drawTexture(popout_img, w-20, h-20, 20, 20, {1, 1, 1})
+					sasl.gl.drawTexture(close_img, 0, h-20, 20, 20, {1, 1, 1})
 					end
 				end, 
 				

@@ -794,7 +794,7 @@ local file = io.open(filename, "r")
 if file == nil then
 	return false
 end
-	print("Pasrsing APT file: " .. filename)
+	print("Parsing APT file: " .. filename)
 	local line = file:read("*line")
 	local words = {nil, nil, nil, nil, nil, nil, nil}
 	while true do
@@ -971,7 +971,7 @@ if file == nil then
 	print("earth_fix.dat file not found")
 	return
 end
-		print("Pasrsing FIX file: " .. filename)
+		print("Parsing FIX file: " .. filename)
 		local line = file:read("*line")
 		while true do
 			line = file:read("*line")
@@ -1012,7 +1012,7 @@ local file = io.open(filename, "r")
 if file == nil then
 	return
 end
-		print("Pasrsing NAV file: " .. filename)
+		print("Parsing NAV file: " .. filename)
 		local line = file:read("*line")
 
 		while true do
@@ -2519,8 +2519,8 @@ function update_nav_database()
 	data["cycle"] = ""
 
 	local folders = search_nav_paths()
-
-	if sasl.getXPVersion () == 11 then
+  print("XP version is " .. sasl.getXPVersion ())
+	if sasl.getXPVersion () < 12000 then
 		parse_apt("Custom Scenery/Global Airports/Earth nav data/", data)
 	else 
 		parse_apt("Global Scenery/Global Airports/Earth nav data/", data)
